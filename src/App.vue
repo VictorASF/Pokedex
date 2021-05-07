@@ -1,17 +1,48 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class='column is-half is-offset-one-quarter'>
+      <h4 class='is-size-4'>Pokedex</h4>
+      <input class = 'input is-rounded' id='distant-top' 
+             type="text" placeholder="Buscar pokemon pelo nome" v-model='busca'>
+      <button class='button is-fullwidth is-success is-rounded' id='distant-top'>Buscar</button>
+      <div v-for="(poke,index) in resultadoBusca" :key='index'>
+          <Pokemon :name="poke.name" :url ="poke.url" :id="index"/>      
+      </div>
+    </div>
+  
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios';
+import Pokemon from './components/Pokemon'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  data(){
+    return{
+      pokemons:[],
+      busca: ""
+    }
+  },
+  created: function(){
+    axios.get('https://pokeapi.co/api/v2/pokemon?limit=151&offset=0').then(
+      res=>{
+        this.pokemons = res.data.results;
+      }
+    )
+  },
+  components:{
+    Pokemon,
+  },
+  computed:{
+    resultadoBusca: function(){
+      if(this.busca == '' || this.busca == ' '){
+        return this.pokemons;
+      }else{
+        return this.pokemons.filter(pokemon => pokemon.name == this.busca)
+      }
+    }
   }
 }
 </script>
@@ -24,5 +55,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+#distant-top{
+  margin-top:2%;
 }
 </style>
